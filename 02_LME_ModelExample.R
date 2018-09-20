@@ -15,17 +15,6 @@ length(unique(modeldata$PolNumber)) # ~10,000 unique policyholders
 length(unique(modeldata$DistCode)) # >300 unique distributors
 summary(as.numeric(table(modeldata$DistCode))) # Some distributors are represented by as few as 1 quarterly record, and most <30
 
-# Create holdout subset ####
-# Guarantee that each distributor has observations in each subset
-set.seed(2)
-modeldata <- modeldata %>%
-  group_by(DistCode) %>%
-  mutate(Sample = ifelse(rep(n(), n()) == 1, 
-                "training",
-                ifelse(row_number() %in% sample(1:n(), ceiling(n()/2), replace = F),
-                       "training", 
-                       "holdout"))) %>%
-  ungroup()
 
 # Fit models ####
 # Fit with distributor as a driver
