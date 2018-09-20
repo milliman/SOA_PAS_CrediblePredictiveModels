@@ -28,6 +28,18 @@ modeldata <- sampledata %>%
 modeldata <- modeldata %>%
   mutate(Surr = ifelse(runif(n()) < 1 / (1 + exp(-surr_logodds)), 1, 0))
 
+# Create holdout subset ####
+# Guarantee that each distributor has observations in each subset
+set.seed(2)
+modeldata <- modeldata %>%
+  group_by(DistCode) %>%
+  mutate(Sample = ifelse(rep(n(), n()) == 1, 
+                         "training",
+                         ifelse(row_number() %in% sample(1:n(), ceiling(n()/2), replace = F),
+                                "training", 
+                                "holdout"))) %>%
+  ungroup()
+
 # Save data
 saveRDS(modeldata,
         file = "SampleDataset.RDS")
