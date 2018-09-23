@@ -1,0 +1,16 @@
+R version 3.4.4 (2018-03-15)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows >= 8 x64 (build 9200)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=English_United States.1252  LC_CTYPE=English_United States.1252    LC_MONETARY=English_United States.1252
+[4] LC_NUMERIC=C                           LC_TIME=English_United States.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] glmnet_2.0-16      foreach_1.4.4      lme4_1.1-17        Matrix_1.2-12      reshape2_1.4.3     dplyr_0.7.4       
+[7] ggplot2_2.2.1.9000
