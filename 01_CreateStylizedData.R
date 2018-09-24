@@ -1,4 +1,9 @@
-library(dplyr)
+# Create a dataset styled after our industry lapse data
+# This dataset contains no true records from our industry data, 
+# but the lapse response variable (Surr) has relationships with the
+# predictor variables that approximate those found in said industry data.
+
+# library(dplyr)
 
 # How many quarterly records?
 num.records <- 200000
