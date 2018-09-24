@@ -42,8 +42,9 @@ system.time(
 plot.cv.glmnet(cv.glmnet.model, sign.lambda=-1)
 
 
-# Summarize DistCode coefficients ####
+# Summarize coefficients ####
 C <- coef(cv.glmnet.model, s = "lambda.min")
+C[setdiff(c(1:nrow(C)), grep("DistCode", rownames(C))),]
 summary(C[grep("DistCode", rownames(C)),])
 
 
