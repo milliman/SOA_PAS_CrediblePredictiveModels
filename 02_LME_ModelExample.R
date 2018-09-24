@@ -1,10 +1,10 @@
 # Compare mixed model to linear model
 # Want to incorporate distibutor as a variable
 
-library(lme4)
-library(ggplot2)
-library(dplyr)
-library(reshape2)
+# library(lme4)
+# library(ggplot2)
+# library(dplyr)
+# library(reshape2)
 
 # Read data ####
 modeldata <- readRDS("SampleDataset.RDS")
