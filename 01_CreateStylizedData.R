@@ -24,7 +24,7 @@ sampledata <- data.frame(CSV = rexp(num.records, 1/120000) + 1000,
 distributors <- data.frame(DistCode = unique(sampledata$DistCode),
                            Effect = rnorm(length(unique(sampledata$DistCode)), -4, 0.25))
 
-# Create surrender response
+# Randomly generate surrender response
 modeldata <- sampledata %>%
   left_join(distributors,
             by = "DistCode") %>%
