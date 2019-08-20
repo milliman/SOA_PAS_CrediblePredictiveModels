@@ -7,7 +7,7 @@
 modeldata <- readRDS("SampleDataset_withLMMPreds.RDS")
 
 # Assess models ####
-# GLM predictions range from 0 to 1 because of overfitting to distributors
+# GLM predictions range from 0 to 1, inclusive, because of overfitting to distributors
 summary(glm.model$fitted.values)
 
 # LMM predictions have a more believable range
@@ -21,6 +21,7 @@ summary(lmm.model)
 
 # Log-loss metric comparison
 # There is some edge to using the lmm with DistCode over ignoring DistCode altogether
+# i.e. the mixed effects model fits the holdout data better than the GLM without dist code
 modeldata %>% 
   filter(Sample == "holdout") %>%
   summarize(lmm.logloss = -sum(Surr*log(lmm.pred) + (1 - Surr)*log(1 - lmm.pred)),
@@ -79,7 +80,12 @@ C %>%
 
 ggsave("ShrinkagePlot.png", width = 7, height = 4)
 
-# Distributor summary
+# Distributor summary ####
+# Range of coefficients
 summary(coef.df$Coef_LMM)
+
+# Effect multiplier between distributors with max and min coefficients
 exp(max(coef.df$Coef_LMM) - min(coef.df$Coef_LMM))
+
+# Effect multiplier between 97.5th percentile distributor and 2.5th percentile
 exp(quantile(coef.df$Coef_LMM, 0.975) - quantile(coef.df$Coef_LMM, 0.025))
