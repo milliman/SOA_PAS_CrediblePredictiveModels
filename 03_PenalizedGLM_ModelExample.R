@@ -1,50 +1,46 @@
 # Fit the same model, but shrink the distributor codes using penalization
+# Use the base GLM fit in the 02_LME_ModelExample script as an offset for this example
 
 # library(glmnet)
 
-# Read data ####
+# Read data/model ####
+glm.model.base <- readRDS("IgnoreList/GLM_base_ModelObject.RDS")
 modeldata <- readRDS("SampleDataset.RDS")
-
-# Make "IN" (whether the policyholder is in surrender charge period) categorical
-modeldata <- modeldata %>%
-  mutate(IN = factor(IN))
+# Note that the offset should be in the units of the link response (i.e. logodds, not probabilities)
+modeldata[["offset"]] <- predict(glm.model.base, modeldata, type = "link")
 
 # Prepare model matrix ####
-x.train <- model.matrix(object = ~ IN + Dur_IN + ITM:Dur_IN + Dur_OUT + ITM:Dur_OUT + DistCode,
-                  data = modeldata %>% 
-                    filter(Sample == "training"),
-                  contrasts.arg = lapply(modeldata %>% 
-                                           filter(Sample == "training") %>% 
-                                           select(IN, DistCode),
-                                         contrasts,
-                                         contrasts = FALSE))
+# Consider using dummyVars() function from caret package
+x.train <- model.matrix(object = ~ -1 + DistCode,
+                        data = modeldata %>% 
+                          filter(Sample == "training"),
+                        contrasts.arg = contrasts(modeldata$DistCode[modeldata$Sample == "training"], 
+                                                  contrasts = FALSE))
 
-x.train <- x.train[,-1] # remove the intercept column
 
 # Fit penalized GLM ####
-p.fac <- ifelse(1:ncol(x.train) %in% grep("DistCode", colnames(x.train)), 1, 0) # select which columns to be shrunk
 
-# Elastic net fit ####
+# Elastic net fit
 # Takes 5 - 6 minutes
 system.time(
   cv.glmnet.model <- cv.glmnet(x = x.train,
                                y = modeldata$Surr[modeldata$Sample == "training"],
                                family = "binomial",
-                               penalty.factor = p.fac,
                                standardize = T,
+                               intercept = T,
                                alpha = 0.5, # 50% LASSO and 50% Ridge penalties
-                               nfolds = 5
-                               #,
-                               #offset = OFFSET_COLNAME) # this is where you input your offset
+                               nfolds = 5,
+                               offset = modeldata$offset[modeldata$Sample == "training"])
   )
-)
 
 plot.cv.glmnet(cv.glmnet.model, sign.lambda=-1)
 
 
 # Summarize coefficients ####
 C <- coef(cv.glmnet.model, s = "lambda.min")
+# Intercept
 C[setdiff(c(1:nrow(C)), grep("DistCode", rownames(C))),]
+# Summary of distributor coefficients
 summary(C[grep("DistCode", rownames(C)),])
 
 
