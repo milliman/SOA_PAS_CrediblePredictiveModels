@@ -4,6 +4,7 @@ library(dplyr)
 library(reshape2)
 library(lme4)
 library(glmnet)
+library(doParallel)
 
 source("01_CreateStylizeddata.R")
 source("02_LME_ModelExample.R")
